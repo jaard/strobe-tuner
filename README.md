@@ -102,12 +102,45 @@ The first run clones and compiles the dependencies into `external/`, later runs 
 | `just ipa` | Signed build for iPhone, see `platform/ios/build-device.sh`, needs Xcode and a provisioning profile |
 | `just apk` | Debug signed build for Android, see [Android](#android) |
 | `just build` | Optimized build for this machine |
+| `just app` | Standalone Apple silicon Mac app for local use, see [macOS app](#macos-app) |
 | `just pkg` | Signed build for the Mac App Store, see `platform/macos/build-pkg.sh`, links SDL in statically |
 | `just test` | Unit tests of the pitch detection and strobe code |
 | `just accuracy` | Generated tones with and without noise through the tuner, checks the note and the readout within 1¢, `just accuracy full` for every note and three concert pitches |
 | `just recordings` | Your recordings in `sandbox/samples`, one note per file named at the end like `strat_E2.wav`, the folder isn't in the repo, shifted by known cents through the tuner, checks the readout moves by the shift, report only, `just recordings <folder> csv` for another folder as CSV |
 
 Debug builds also have <kbd>Cmd</kbd><kbd>,</kbd> to open the config file and <kbd>Cmd</kbd><kbd>Shift</kbd><kbd>,</kbd> to reload it.
+
+#### macOS app
+
+`just app` builds `build/macos/Strobie.app` for Apple silicon Macs running macOS 11 or later.
+It needs Odin, just, git, CMake and the Xcode command line tools. Install the tools with
+`brew install odin just cmake`, and run `xcode-select --install` if the command line tools
+are not installed. Full Xcode and a Homebrew SDL installation are not required for this build.
+
+```sh
+just app
+open build/macos/Strobie.app
+```
+
+You can also open the app in Finder or copy it into Applications. SDL and the audio libraries
+are linked statically, and the fonts and Metal shaders are embedded, so running the app does
+not require Odin, Homebrew or this checkout. The first build downloads and compiles its
+dependencies; subsequent builds reuse them in `external/macos/`. SDL defaults to version
+3.4.16; `SDL_VERSION=<version> just app` selects another release if your Odin bindings need it.
+Delete `external/macos/` to rebuild native dependencies after updating Odin.
+
+The app needs no Apple developer account, provisioning profile or signing certificate.
+It receives an ad hoc signature, which Apple silicon requires, and uses no App Store sandbox
+entitlements. Its bundle identifier defaults to `app.strobie.local`, separate from the upstream
+app; `MAC_BUNDLE_ID=<your.identifier> just app` overrides it. Keep that identifier stable between
+builds so macOS can identify the app consistently.
+
+Allow microphone access when macOS asks. You can change it later in System Settings →
+Privacy & Security → Microphone. Settings are saved to
+`~/Library/Application Support/Strobie/config.ini`, shared with command-line builds.
+
+`just pkg` still builds the signed Mac App Store installer with its existing profile and
+certificate requirements. Its output is in `build/macos-app-store/`, separate from the local app.
 
 #### Linux
 

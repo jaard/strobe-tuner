@@ -54,6 +54,10 @@ dev target="": setup
 build: setup
     odin build src/app -o:speed -microarch:native -vet
 
+# Standalone Mac .app for local use, no Apple account or certificates required
+app: setup
+    sh platform/macos/build-app.sh
+
 # Signed .ipa for iPhone: IOS_PROFILE=path/to/profile.mobileprovision [IOS_DEVICE=<name>] just ipa
 ipa: setup
     sh platform/ios/build-device.sh
