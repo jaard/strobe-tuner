@@ -74,6 +74,10 @@ pkg: setup
 test:
     odin test src/core -vet
 
+# Regenerate the platform icons: just icons [red|mint|amber|mono] (see README.md)
+icons colorway="":
+    node platform/generate-icons.cjs "{{colorway}}"
+
 # Generated tones through the tuner, checks the note and the readout: just accuracy [full]
 accuracy mode="": setup
     odin run sandbox/accuracy -o:speed -- {{mode}}

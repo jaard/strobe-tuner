@@ -105,10 +105,36 @@ The first run clones and compiles the dependencies into `external/`, later runs 
 | `just app` | Standalone Apple silicon Mac app for local use, see [macOS app](#macos-app) |
 | `just pkg` | Signed build for the Mac App Store, see `platform/macos/build-pkg.sh`, links SDL in statically |
 | `just test` | Unit tests of the pitch detection and strobe code |
+| `just icons [colorway]` | Regenerates platform icons with the selected app palette, see [App icons](#app-icons) |
 | `just accuracy` | Generated tones with and without noise through the tuner, checks the note and the readout within 1¢, `just accuracy full` for every note and three concert pitches |
 | `just recordings` | Your recordings in `sandbox/samples`, one note per file named at the end like `strat_E2.wav`, the folder isn't in the repo, shifted by known cents through the tuner, checks the readout moves by the shift, report only, `just recordings <folder> csv` for another folder as CSV |
 
 Debug builds also have <kbd>Cmd</kbd><kbd>,</kbd> to open the config file and <kbd>Cmd</kbd><kbd>Shift</kbd><kbd>,</kbd> to reload it.
+
+#### App icons
+
+Use `just icons <colorway>` to change the icon colors without editing the SVG. The generator reads the flat palettes directly from `COLORWAYS` in `src/app/colorways.odin`:
+
+| Colorway | Command |
+| --- | --- |
+| Amber / orange | `just icons amber` |
+| Red | `just icons red` |
+| Mint | `just icons mint` |
+| Monochrome | `just icons mono` |
+
+The optional generator needs Node.js and [sharp](https://sharp.pixelplumbing.com/). Install sharp outside the project and set its module path in the current shell:
+
+```sh
+npm install --prefix /tmp/strobie-icon-tools --no-package-lock sharp@0.35.5
+export NODE_PATH=/tmp/strobie-icon-tools/node_modules
+just icons amber
+```
+
+The selection is saved in `platform/macos/AppIcon.iconset/Icon.svg` along with ordinary fill colors, so the SVG previews correctly in other tools. Running `just icons` without an argument keeps that selection and picks up any changes to its palette in the Odin file. The IDs match the app: `red`, `mint`, `amber`, and `mono` (`red` maps to the internal `VIBRANT_RED` enum and `mint` to `MINTY`). New entries in `COLORWAYS` are available by their lowercase enum name. Lamp glow settings do not affect the icon.
+
+This updates the SVG, the macOS icon set, the window icon in `assets/images`, and the opaque 1024px iOS icon. The macOS artwork retains its rounded square and transparent margins; iOS uses the artwork edge to edge and supplies its own corner mask. Android's build already derives its launcher icon from the iOS PNG. Commit the SVG and generated PNGs together, then rebuild the app to pick up the icon. Normal app builds use the checked-in images and do not need these tools. If the temporary tools directory has been cleared, repeat the installation above.
+
+Only changes to the artwork itself require editing `Icon.svg`. Preserve its `data-colorway` attribute and the `data-stripe="lit"` / `data-stripe="dark"` markers on each band's fills, then run `just icons` to export the updated artwork.
 
 #### macOS app
 
