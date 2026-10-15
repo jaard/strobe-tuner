@@ -1,15 +1,25 @@
 <div align="center">
   
-# Strobie
+# Strobel
 
 A simple stroboscopic instrument tuner.
 
-<img src="docs/demo.webp" width="300" alt="Strobie tuning a note">
+<img src="docs/demo.webp" width="300" alt="Upstream Strobie tuning a note">
 
 </div>
 
 
-Strobie is coming to the App Store for Mac and iPhone. The source is here to read and build yourself, see [Development](#development).
+Strobel is an unofficial fork of [Strobie](https://github.com/dsego/strobe-tuner),
+maintained independently by Jaard Hauschildt. It is not an official Strobie release.
+The original tuner was created by Davorin Šego.
+
+Current Strobel version: **0.1.0** (build **1**). Based on Strobie **2.0**,
+upstream commit [`1bbd2b0`](https://github.com/dsego/strobe-tuner/commit/1bbd2b0117cd4cb308266ffe2cda7898faa2d3df).
+Strobel uses its own version sequence; its upstream base is tracked separately.
+
+Fork modifications began on 2026-10-13 and include standalone local macOS packaging,
+app icon generation and the Strobel branding (updated 2026-10-15).
+See [Development](#development) to build this fork from source.
 
 ### Features
 
@@ -38,9 +48,16 @@ Strobie is coming to the App Store for Mac and iPhone. The source is here to rea
 
 ### License
 
-Copyright ©️ 2025–2026 Davorin Šego <br />
-Licensed under the GPL v3  <br />
-https://www.gnu.org/licenses/gpl-3.0.en.html
+Original software copyright © 2025–2026 Davorin Šego. <br />
+Modifications copyright © 2026 Jaard Hauschildt.
+
+Licensed under the GNU General Public License, version 3 or (at your option) any later version
+(`GPL-3.0-or-later`). You may redistribute and modify this software under those terms.
+It is provided without warranty, to the extent permitted by law. See [LICENSE](LICENSE)
+for the full terms; third-party components retain their respective licenses and notices.
+
+[Fork source](https://github.com/jaard/strobe-tuner) ·
+[Upstream source](https://github.com/dsego/strobe-tuner)
 
 
 
@@ -87,7 +104,7 @@ MIT license <br />
 You need [Odin](https://odin-lang.org/docs/install/), the [just](https://github.com/casey/just) command runner, git, clang (on macOS from the Xcode command line tools) and SDL3 (`brew install sdl3`). It draws with SDL3 GPU, Metal on macOS and iOS, Vulkan on Linux and Android.
 
 ```sh
-git clone https://github.com/dsego/strobe-tuner
+git clone https://github.com/jaard/strobe-tuner
 cd strobe-tuner
 just dev
 ```
@@ -125,8 +142,8 @@ Use `just icons <colorway>` to change the icon colors without editing the SVG. T
 The optional generator needs Node.js and [sharp](https://sharp.pixelplumbing.com/). Install sharp outside the project and set its module path in the current shell:
 
 ```sh
-npm install --prefix /tmp/strobie-icon-tools --no-package-lock sharp@0.35.5
-export NODE_PATH=/tmp/strobie-icon-tools/node_modules
+npm install --prefix /tmp/strobel-icon-tools --no-package-lock sharp@0.35.5
+export NODE_PATH=/tmp/strobel-icon-tools/node_modules
 just icons amber
 ```
 
@@ -138,14 +155,14 @@ Only changes to the artwork itself require editing `Icon.svg`. Preserve its `dat
 
 #### macOS app
 
-`just app` builds `build/macos/Strobie.app` for Apple silicon Macs running macOS 11 or later.
+`just app` builds `build/macos/Strobel.app` for Apple silicon Macs running macOS 11 or later.
 It needs Odin, just, git, CMake and the Xcode command line tools. Install the tools with
 `brew install odin just cmake`, and run `xcode-select --install` if the command line tools
 are not installed. Full Xcode and a Homebrew SDL installation are not required for this build.
 
 ```sh
 just app
-open build/macos/Strobie.app
+open build/macos/Strobel.app
 ```
 
 You can also open the app in Finder or copy it into Applications. SDL and the audio libraries
@@ -157,13 +174,15 @@ Delete `external/macos/` to rebuild native dependencies after updating Odin.
 
 The app needs no Apple developer account, provisioning profile or signing certificate.
 It receives an ad hoc signature, which Apple silicon requires, and uses no App Store sandbox
-entitlements. Its bundle identifier defaults to `app.strobie.local`, separate from the upstream
+entitlements. Its bundle identifier defaults to `app.strobel.local`, separate from the upstream
 app; `MAC_BUNDLE_ID=<your.identifier> just app` overrides it. Keep that identifier stable between
 builds so macOS can identify the app consistently.
 
 Allow microphone access when macOS asks. You can change it later in System Settings →
 Privacy & Security → Microphone. Settings are saved to
-`~/Library/Application Support/Strobie/config.ini`, shared with command-line builds.
+`~/Library/Application Support/Strobel/config.ini`, shared with command-line builds.
+Strobel starts with its own default settings; settings from Strobie are not migrated.
+The new bundle identifier also gives Strobel its own microphone permission.
 
 `just pkg` still builds the signed Mac App Store installer with its existing profile and
 certificate requirements. Its output is in `build/macos-app-store/`, separate from the local app.
@@ -178,7 +197,7 @@ sudo dnf install clang git SDL3-devel glslc   # Fedora
 just dev
 ```
 
-The config is saved to `$XDG_CONFIG_HOME/Strobie/config.ini`, or `~/.config/Strobie/config.ini`.
+The config is saved to `$XDG_CONFIG_HOME/Strobel/config.ini`, or `~/.config/Strobel/config.ini`.
 
 #### Android
 

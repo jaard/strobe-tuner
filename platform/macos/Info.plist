@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>Strobie</string>
+	<string>Strobel</string>
 	<key>CFBundleExecutable</key>
 	<string>app.bin</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>app.strobie</string>
+	<string>app.strobel.local</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0</string>
+	<string>0.1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSApplicationCategoryType</key>
@@ -21,7 +21,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>11.0</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2025–2026 Davorin Šego</string>
+	<string>Copyright © 2025–2026 Davorin Šego; modifications © 2026 Jaard Hauschildt</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>The tuner listens to your instrument through the microphone.</string>
 	<key>NSPrincipalClass</key>

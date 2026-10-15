@@ -1,9 +1,22 @@
-Strobie
-Copyright (C) 2025-2026 Davorin Šego
-Licensed under the GNU General Public License v3
-https://github.com/dsego/strobe-tuner
+Strobel
+An unofficial fork of Strobie, maintained independently by Jaard Hauschildt.
+This is not an official Strobie release.
+Based on Strobie 2.0 (upstream commit 1bbd2b0).
 
-Strobie is built with the following third-party software.
+Original software Copyright (C) 2025-2026 Davorin Šego.
+Modifications Copyright (C) 2026 Jaard Hauschildt.
+Fork modifications began on 2026-10-13; branding updated on 2026-10-15.
+
+Licensed under the GNU General Public License, version 3 or (at your option)
+any later version. You may redistribute and modify this software under those terms.
+Provided without warranty, to the extent permitted by law. See the bundled LICENSE
+file for the full terms. Third-party components retain their respective licenses.
+
+Fork source: https://github.com/jaard/strobe-tuner
+Upstream source: https://github.com/dsego/strobe-tuner
+License: https://www.gnu.org/licenses/gpl-3.0.html
+
+Strobel is built with the following third-party software.
 
 
 PortAudio (ring buffer)

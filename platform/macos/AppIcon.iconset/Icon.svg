@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none" data-colorway="amber">
-  <title>Strobie app icon</title>
+  <title>Strobel app icon</title>
   <desc>Three striped strobe bands. Colors are set by just icons from COLORWAYS in src/app/colorways.odin.</desc>
   <defs>
     <!-- The exporter squares this shape and crops to its bounds for iOS and Android. -->

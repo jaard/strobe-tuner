@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Build a standalone Apple silicon .app for local use, without Apple certificates.
-# MAC_BUNDLE_ID overrides the stable local identifier (default: app.strobie.local).
+# MAC_BUNDLE_ID overrides the stable local identifier (default from Info.plist: app.strobel.local).
 
 set -eu
 
@@ -9,7 +9,7 @@ OUT="$ROOT/build/macos"
 
 . "$ROOT/platform/macos/build-bundle.sh"
 
-BUNDLE_ID=${MAC_BUNDLE_ID:-app.strobie.local}
+BUNDLE_ID=${MAC_BUNDLE_ID:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$ROOT/platform/macos/Info.plist")}
 plutil -replace CFBundleIdentifier -string "$BUNDLE_ID" "$APP/Contents/Info.plist"
 
 # Apple silicon requires a code signature. Ad hoc signing needs no account or certificate.

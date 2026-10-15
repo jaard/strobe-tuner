@@ -24,12 +24,13 @@ import "../audio"
 import "../core"
 import "../gfx"
 
-APP_NAME :: "Strobie"
+// Fork branding updated 2026-10-15 by Jaard Hauschildt.
+APP_NAME :: "Strobel"
 
 // Show the signal stats and NSDF plots, e.g. `odin run app -debug -define:DEBUG_STATS=true`
 DEBUG_STATS :: #config(DEBUG_STATS, false)
 
-// The version and build from the Info.plist, e.g. "2.0 (1)", the bundle scripts pass it in. Shown after the
+// The version and build from the Info.plist, e.g. "0.1.0 (1)", the bundle scripts pass it in. Shown after the
 // settings' title.
 VERSION :: #config(VERSION, "dev")
 
