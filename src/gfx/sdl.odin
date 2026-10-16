@@ -218,7 +218,7 @@ gpu: struct {
 
 init :: proc(width, height: i32, title: cstring) -> bool {
     if !sdl.Init({.VIDEO}) {
-        fmt.eprintln("SDL_Init failed:", sdl.GetError())
+        log_sdl_error("SDL_Init failed")
         return false
     }
 
@@ -234,18 +234,37 @@ init :: proc(width, height: i32, title: cstring) -> bool {
 
     gpu.window = sdl.CreateWindow(title, width, height, {.HIGH_PIXEL_DENSITY})
     if gpu.window == nil {
-        fmt.eprintln("SDL_CreateWindow failed:", sdl.GetError())
+        log_sdl_error("SDL_CreateWindow failed")
         return false
     }
 
-    gpu.device = sdl.CreateGPUDevice(SHADER_FORMAT, ODIN_DEBUG, nil)
+    when ANDROID {
+        props := sdl.CreateProperties()
+        if props == 0 {
+            log_sdl_error("SDL_CreateProperties failed")
+            return false
+        }
+        defer sdl.DestroyProperties(props)
+
+        // The 2D shaders do not write clip distances. SDL requires them by default, which
+        // rejects otherwise suitable Android GPUs such as the Galaxy A54's Mali-G68.
+        if !sdl.SetBooleanProperty(props, sdl.PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true) ||
+           !sdl.SetBooleanProperty(props, sdl.PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, ODIN_DEBUG) ||
+           !sdl.SetBooleanProperty(props, sdl.PROP_GPU_DEVICE_CREATE_FEATURE_CLIP_DISTANCE_BOOLEAN, false) {
+            log_sdl_error("Could not configure GPU properties")
+            return false
+        }
+        gpu.device = sdl.CreateGPUDeviceWithProperties(props)
+    } else {
+        gpu.device = sdl.CreateGPUDevice(SHADER_FORMAT, ODIN_DEBUG, nil)
+    }
     if gpu.device == nil {
-        fmt.eprintln("SDL_CreateGPUDevice failed:", sdl.GetError())
+        log_sdl_error("SDL_CreateGPUDevice failed")
         return false
     }
 
     if !sdl.ClaimWindowForGPUDevice(gpu.device, gpu.window) {
-        fmt.eprintln("SDL_ClaimWindowForGPUDevice failed:", sdl.GetError())
+        log_sdl_error("SDL_ClaimWindowForGPUDevice failed")
         return false
     }
     _ = sdl.SetGPUSwapchainParameters(gpu.device, gpu.window, .SDR, .VSYNC)
@@ -296,6 +315,11 @@ init :: proc(width, height: i32, title: cstring) -> bool {
 
     gpu.last_counter = sdl.GetPerformanceCounter()
     return true
+}
+
+// stderr is not visible in Android's logcat; SDL routes its logs to the platform logger.
+log_sdl_error :: proc(operation: cstring) {
+    sdl.LogError(i32(sdl.LogCategory.GPU), "%s: %s", operation, sdl.GetError())
 }
 
 shutdown :: proc() {
@@ -1217,7 +1241,7 @@ create_shader :: proc(
         },
     )
     if shader == nil {
-        fmt.eprintln("Could not compile shader", source.entrypoint, sdl.GetError())
+        log_sdl_error(fmt.ctprintf("Could not compile shader %s", source.entrypoint))
     }
     return shader
 }
@@ -1279,7 +1303,7 @@ create_pipeline :: proc(
         },
     )
     if pipeline == nil {
-        fmt.eprintln("Could not create pipeline", program, blend, sdl.GetError())
+        log_sdl_error(fmt.ctprintf("Could not create pipeline %v %v", program, blend))
     }
     return pipeline
 }

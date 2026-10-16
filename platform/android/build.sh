@@ -11,7 +11,8 @@
 #   SDL_VERSION=3.4.x        SDL release to build, defaults to the brew installed version
 #   JAVA_HOME=<path>         overrides discovery of JDK 21, JDK 17, then the system JDK
 #
-# SDL's logs: adb logcat -s SDL, the app's own prints go nowhere on Android
+# SDL's logs: adb logcat -s SDL SDL/APP SDL/GPU; graphics startup errors use SDL/GPU.
+# The app's other prints go nowhere on Android.
 
 set -eu
 

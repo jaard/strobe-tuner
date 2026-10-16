@@ -221,7 +221,7 @@ android --sdk="$(brew --prefix)/share/android-commandlinetools" sdk install \
   platforms/android-35 build-tools/35.0.0 ndk/28.2.13676358
 ```
 
-To install on a phone, tap Build number in Settings → About phone 7 times, turn on USB debugging in Developer options, plug it in and accept the prompt from `adb devices`. `ANDROID_DEVICE=usb just apk` then installs and launches it. `adb logcat -s SDL` shows SDL's logs, `brew install scrcpy` mirrors the screen.
+To install on a phone, tap Build number in Settings → About phone 7 times, turn on USB debugging in Developer options, plug it in and accept the prompt from `adb devices`. `ANDROID_DEVICE=usb just apk` then installs and launches it. `adb logcat -s SDL SDL/APP SDL/GPU` shows SDL's logs, including graphics startup errors; `brew install scrcpy` mirrors the screen.
 
 
 ### How it works
