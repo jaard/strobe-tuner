@@ -606,10 +606,8 @@ end_frame :: proc() {
         sdl.EndGPURenderPass(render_pass)
     }
 
-    logical_w: i32
-    sdl.GetWindowSize(gpu.window, &logical_w, nil)
-    window_zoom := f32(swapchain_w) / f32(max(logical_w, 1))
-    window_size := [2]f32{f32(swapchain_w), f32(swapchain_h)}
+    window_zoom := f32(swapchain_w) / max(window_size().x, 1)
+    window_pixels := [2]f32{f32(swapchain_w), f32(swapchain_h)}
 
     clear := normalize_color(gpu.clear)
     color_target := sdl.GPUColorTargetInfo {
@@ -618,7 +616,7 @@ end_frame :: proc() {
         load_op     = .CLEAR,
         store_op    = .STORE,
     }
-    render_pass := begin_render_pass(command_buffer, &color_target, window_size)
+    render_pass := begin_render_pass(command_buffer, &color_target, window_pixels)
     for pass, pass_index in gpu.passes {
         if pass.target != nil do continue
 
@@ -626,7 +624,7 @@ end_frame :: proc() {
             command_buffer,
             render_pass,
             pass_commands(pass_index),
-            window_size,
+            window_pixels,
             {},
             window_zoom,
             PASS_WINDOW,
@@ -658,14 +656,27 @@ frame_time :: proc() -> f32 {
     return gpu.frame_time
 }
 
+// SDL uses points for Apple windows but surface pixels on Android. Divide Android's
+// window, safe area and pointer coordinates by its content scale to expose the same UI units.
+window_coordinate_scale :: proc() -> f32 {
+    when ANDROID {
+        display := sdl.GetDisplayForWindow(gpu.window)
+        scale := sdl.GetDisplayContentScale(display)
+        return scale if scale > 0 else 1
+    } else {
+        return 1
+    }
+}
+
+// Physical pixels per UI unit, for crisp fonts and offscreen render targets.
 dpi_scale :: proc() -> f32 {
-    return sdl.GetWindowPixelDensity(gpu.window)
+    return sdl.GetWindowPixelDensity(gpu.window) * window_coordinate_scale()
 }
 
 window_size :: proc() -> [2]f32 {
     width, height: i32
     sdl.GetWindowSize(gpu.window, &width, &height)
-    return {f32(width), f32(height)}
+    return [2]f32{f32(width), f32(height)} / window_coordinate_scale()
 }
 
 // Part of the window clear of the notch and the home indicator
@@ -675,7 +686,8 @@ safe_area :: proc() -> Rect {
         size := window_size()
         return {0, 0, size.x, size.y}
     }
-    return {f32(area.x), f32(area.y), f32(area.w), f32(area.h)}
+    scale := window_coordinate_scale()
+    return {f32(area.x) / scale, f32(area.y) / scale, f32(area.w) / scale, f32(area.h) / scale}
 }
 
 key_pressed :: proc(key: Key) -> bool {
@@ -689,7 +701,7 @@ key_down :: proc(key: Key) -> bool {
 mouse_position :: proc() -> [2]f32 {
     position: [2]f32
     _ = sdl.GetMouseState(&position.x, &position.y)
-    return position
+    return position / window_coordinate_scale()
 }
 
 mouse_pressed :: proc() -> bool {
