@@ -201,7 +201,9 @@ The config is saved to `$XDG_CONFIG_HOME/Strobel/config.ini`, or `~/.config/Stro
 
 #### Android
 
-`just apk` builds a debug signed `build/android/Strobie.apk`, see `platform/android/build.sh`. No Android Studio or Gradle, only the command line SDK, adb and a JDK for SDL's Java classes and the build tools. The first build compiles SDL into `external/android`, and stb into the Odin folder with the NDK, where Odin's bindings look for it.
+`just apk` builds a debug signed `build/android/Strobel.apk`, see `platform/android/build.sh`. No Android Studio or Gradle, only the command line SDK, adb and a JDK for SDL's Java classes and the build tools. The first build compiles SDL into `external/android`, and stb into the Odin folder with the NDK, where Odin's bindings look for it.
+
+The Android launcher name is Strobel and its package identifier is `app.strobel.local`, matching the local macOS build. The APK name and version come from the macOS fork metadata. This is a separate app from the earlier `app.strobie` test build: they can coexist, settings are not migrated, and Strobel asks for its own microphone permission.
 
 ```sh
 brew install --cask android-platform-tools android-commandlinetools

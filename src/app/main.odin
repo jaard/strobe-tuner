@@ -33,7 +33,7 @@ main :: proc() {
         sdl.RunApp(c.int(len(runtime.args__)), raw_data(runtime.args__), ios_main, nil)
     } else {
         // On Android SDL's Java activity loads libmain.so and calls its C main on a thread of its own,
-        // see platform/android/StrobieActivity.java
+        // see platform/android/StrobelActivity.java
         run()
     }
 }

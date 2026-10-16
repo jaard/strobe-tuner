@@ -190,7 +190,7 @@ error_callback :: proc "c" (stream: ^AAudioStream, userdata: rawptr, error: AAud
 
 
 // The app's page in Android's settings, where the microphone is turned on again. After two denials
-// Android stops showing its dialog, the settings always work. StrobieActivity opens them.
+// Android stops showing its dialog, the settings always work. StrobelActivity opens them.
 allow_microphone :: proc() {
     OPEN_APP_SETTINGS :: 0x8000 // COMMAND_USER in SDLActivity.java
     if !sdl.SendAndroidMessage(OPEN_APP_SETTINGS, 0) {

@@ -21,13 +21,14 @@ DEPS="$ROOT/external/android"
 OUT="$ROOT/build/android"
 STAGE="$OUT/apk" # the .apk's files, the native libraries in lib/arm64-v8a
 LIBS="$STAGE/lib/arm64-v8a"
-APK="$OUT/Strobie.apk"
-PACKAGE=app.strobie
+NAME=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$ROOT/platform/macos/Info.plist")
+APK="$OUT/$NAME.apk"
+PACKAGE=app.strobel.local
 MIN_SDK=29 # Android 10, the oldest with Vulkan on most phones
 TARGET_SDK=35
-# The same version as on iOS. The code is Android's own, Google Play wants it higher with each upload and
-# never back, where iOS starts its build number over for each version.
-VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT/platform/ios/Info.plist")
+# The version follows the fork's macOS metadata. Android's version code increases independently
+# with each upload, even when the version name changes.
+VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT/platform/macos/Info.plist")
 VERSION_CODE=1
 
 SDK=${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}
@@ -152,12 +153,14 @@ $CC -shared \
     -o "$LIBS/libmain.so"
 
 echo "Compiling Java"
+# Drop classes from renamed activities or packages before collecting them for the DEX.
+rm -rf "$OUT/classes"
 mkdir -p "$OUT/classes"
 javac -nowarn -Xlint:-options -source 8 -target 8 \
     -bootclasspath "$PLATFORM_JAR" \
     -d "$OUT/classes" \
     "$DEPS"/SDL/android-project/app/src/main/java/org/libsdl/app/*.java \
-    "$ROOT/platform/android/StrobieActivity.java"
+    "$ROOT/platform/android/StrobelActivity.java"
 "$BUILD_TOOLS/d8" --release --min-api $MIN_SDK --lib "$PLATFORM_JAR" --output "$STAGE" \
     $(find "$OUT/classes" -name '*.class')
 
@@ -201,5 +204,5 @@ if [ -n "${ANDROID_DEVICE:-}" ]; then
         ADB="adb -s $ANDROID_DEVICE"
     fi
     $ADB install -r "$APK"
-    $ADB shell am start -n "$PACKAGE/.StrobieActivity"
+    $ADB shell am start -n "$PACKAGE/.StrobelActivity"
 fi

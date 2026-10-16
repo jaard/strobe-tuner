@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- The version and SDK levels are set by platform/android/build.sh -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.strobie">
+    package="app.strobel.local">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -11,7 +11,7 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <!-- The native libraries are stored uncompressed and aligned in the .apk, loaded from there -->
-    <application android:label="Strobie"
+    <application android:label="Strobel"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
         android:extractNativeLibs="false"
@@ -19,7 +19,7 @@
         android:enableOnBackInvokedCallback="false"
         android:hardwareAccelerated="true">
 
-        <activity android:name=".StrobieActivity"
+        <activity android:name=".StrobelActivity"
             android:alwaysRetainTaskState="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"

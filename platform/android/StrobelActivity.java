@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License along
 // with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package app.strobie;
+package app.strobel.local;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -23,7 +23,7 @@ import org.libsdl.app.SDLActivity;
 
 // SDL's activity runs the app. Odin emits a C main that starts its runtime and calls the app's main,
 // SDL calls that instead of SDL_main.
-public class StrobieActivity extends SDLActivity {
+public class StrobelActivity extends SDLActivity {
     // Sent by allow_microphone in src/audio/capture_android.odin
     private static final int COMMAND_OPEN_APP_SETTINGS = COMMAND_USER;
 
