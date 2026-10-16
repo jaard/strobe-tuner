@@ -9,7 +9,7 @@
 #   ANDROID_DEVICE=<serial>  installs and launches the app on this phone, "usb" for the one plugged in,
 #                            needs USB debugging on it
 #   SDL_VERSION=3.4.x        SDL release to build, defaults to the brew installed version
-#   JAVA_HOME=<path>         defaults to Homebrew's openjdk@17
+#   JAVA_HOME=<path>         overrides discovery of JDK 21, JDK 17, then the system JDK
 #
 # SDL's logs: adb logcat -s SDL, the app's own prints go nowhere on Android
 
@@ -42,7 +42,30 @@ CC="$TOOLCHAIN/bin/clang --target=aarch64-linux-android$MIN_SDK"
 AR="$TOOLCHAIN/bin/llvm-ar"
 CFLAGS="-O2 -fPIC"
 
-JAVA_HOME=${JAVA_HOME:-$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home}
+# Keep Java selection local to this build. Homebrew's versioned JDKs are not registered with
+# java_home unless symlinked, so check both locations before falling back to the system JDK.
+if [ -z "${JAVA_HOME:-}" ]; then
+    BREW_PREFIX=$(brew --prefix 2> /dev/null || true)
+    for JAVA_VERSION in 21 17; do
+        CANDIDATE="$BREW_PREFIX/opt/openjdk@$JAVA_VERSION/libexec/openjdk.jdk/Contents/Home"
+        if [ -n "$BREW_PREFIX" ] && [ -x "$CANDIDATE/bin/javac" ]; then
+            JAVA_HOME="$CANDIDATE"
+            break
+        fi
+        JAVA_HOME=$(/usr/libexec/java_home -F -v "$JAVA_VERSION" 2> /dev/null || true)
+        [ -z "$JAVA_HOME" ] || break
+    done
+    if [ -z "$JAVA_HOME" ]; then
+        JAVA_HOME=$(/usr/libexec/java_home 2> /dev/null || true)
+    fi
+fi
+for TOOL in java javac keytool; do
+    if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/$TOOL" ]; then
+        echo "A complete JDK is required. Install openjdk@21 with Homebrew or set JAVA_HOME to a JDK." >&2
+        exit 1
+    fi
+done
+echo "Using JDK: $JAVA_HOME"
 PATH="$JAVA_HOME/bin:$PATH"
 export JAVA_HOME PATH
 

@@ -205,20 +205,20 @@ The config is saved to `$XDG_CONFIG_HOME/Strobel/config.ini`, or `~/.config/Stro
 
 ```sh
 brew install --cask android-platform-tools android-commandlinetools
-brew install openjdk@17
+brew install openjdk@21
 ```
 
-Homebrew's JDK is keg-only, the system `java` doesn't find it and `sdkmanager` fails with "Unable to locate a Java Runtime". Point the shell at it in `~/.zshrc`:
+The Android build discovers Homebrew or registered JDK 21, then JDK 17, then the system JDK. An existing `JAVA_HOME` takes priority. Java selection stays local to the build; no changes to `~/.zshrc` are needed. To select another JDK for one build:
 
 ```sh
-export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
-export PATH="$JAVA_HOME/bin:$PATH"
+JAVA_HOME="/path/to/jdk/Contents/Home" just apk
 ```
 
-Then the SDK packages, `sdkmanager --list | grep ndk` shows the NDK versions:
+Then install the SDK packages into Homebrew's SDK directory with the Android CLI:
 
 ```sh
-sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;28.2.13676358"
+android --sdk="$(brew --prefix)/share/android-commandlinetools" sdk install \
+  platforms/android-35 build-tools/35.0.0 ndk/28.2.13676358
 ```
 
 To install on a phone, tap Build number in Settings → About phone 7 times, turn on USB debugging in Developer options, plug it in and accept the prompt from `adb devices`. `ANDROID_DEVICE=usb just apk` then installs and launches it. `adb logcat -s SDL` shows SDL's logs, `brew install scrcpy` mirrors the screen.
